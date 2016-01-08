@@ -14,7 +14,10 @@ public class Queue {
     private let osQueue: dispatch_queue_t
     
     public init(type: QueueType, label: String?=nil) {
-        osQueue = dispatch_queue_create(label != nil ? label! : "", type == .SERIAL ? DISPATCH_QUEUE_SERIAL : DISPATCH_QUEUE_CONCURRENT)
+
+	let concurrent: COpaquePointer = get_dispatch_queue_concurrent()
+
+        osQueue = dispatch_queue_create(label != nil ? label! : "", concurrent)
     }
     
     public func queueAsync(block: () -> Void) {
