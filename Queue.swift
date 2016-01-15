@@ -14,10 +14,14 @@ public class Queue {
     private let osQueue: dispatch_queue_t
     
     public init(type: QueueType, label: String?=nil) {
+    
+    #if os(Linux)
+        let concurrent: COpaquePointer = get_dispatch_queue_concurrent()
+    #else
+        let concurrent = DISPATCH_QUEUE_CONCURRENT
+    #endif
 
-	let concurrent: COpaquePointer = nil//get_dispatch_queue_concurrent()
-
-        osQueue = dispatch_queue_create(label != nil ? label! : "", nil)
+        osQueue = dispatch_queue_create(label != nil ? label! : "", concurrent)
     }
     
     public func queueAsync(block: () -> Void) {
