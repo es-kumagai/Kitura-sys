@@ -16,13 +16,13 @@ import Foundation
 public class StringUtils {
     
     public static func toUtf8String(str: String) -> NSData? {
-        let nsstr:NSString = str.bridge()
+        let nsstr:NSString = str.bridgeTo()
         let data = nsstr.dataUsingEncoding(NSUTF8StringEncoding)
         return data
     }
     
     public static func toNullTerminatedUtf8String(str: String) -> NSData? {
-        let nsstr:NSString = str.bridge()
+        let nsstr:NSString = str.bridgeTo()
         let cString = nsstr.cStringUsingEncoding(NSUTF8StringEncoding)
         let data = NSData(bytes: cString, length: Int(strlen(cString))+1)
         return data
@@ -30,6 +30,26 @@ public class StringUtils {
     
     public static func fromUtf8String(data: NSData) -> String? {
         let str = NSString(data: data, encoding: NSUTF8StringEncoding)
-        return str!.bridge()
+        return str!.bridgeTo()
+    }
+}
+
+public extension String {
+    func bridgeTo() -> NSString {
+        #if os(Linux)
+            return self.bridge()
+        #else
+            return self as NSString
+        #endif
+    }
+}
+
+public extension NSString {
+    func bridgeTo() -> String {
+        #if os(Linux)
+            return self.bridge()
+        #else
+            return self as String
+        #endif
     }
 }
