@@ -21,11 +21,21 @@ public class Queue {
         let concurrent = DISPATCH_QUEUE_CONCURRENT
     #endif
 
-        osQueue = dispatch_queue_create(label != nil ? label! : "", concurrent)
+    #if os(Linux)
+        let serial: COpaquePointer = nil
+    #else
+        let serial = DISPATCH_QUEUE_SERIAL
+    #endif
+
+        osQueue = dispatch_queue_create(label != nil ? label! : "", type == QueueType.PARALLEL ? concurrent : serial)
     }
     
     public func queueAsync(block: () -> Void) {
         dispatch_async(osQueue, block)
+    }
+
+    public func queueSync(block: () -> Void) {
+        dispatch_sync(osQueue, block)
     }
     
     public static func queueIfFirstOnMain(queue: Queue, block: () -> Void) {
