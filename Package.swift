@@ -19,10 +19,7 @@ import PackageDescription
 let package = Package(
     name: "sys",
         dependencies: [
-            .Package(url: "git@github.ibm.com:ibmswift/HeliumLogger.git", majorVersion: 1),
-        ],
-    testDependencies: [
-        .Package(url: "git@github.ibm.com:ibmswift/PhoenixTestFramework.git", majorVersion: 0)
+            .Package(url: "https://github.com/IBM-Swift/HeliumLogger.git", majorVersion: 1),
         ]
 )
 
