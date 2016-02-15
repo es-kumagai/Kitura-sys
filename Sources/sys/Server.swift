@@ -16,8 +16,13 @@
 
 import Dispatch
 
+// MARK: Server
+
 public class Server {
     
+    ///
+    /// Runs the dispatch queue
+    ///
     public static func run() {
         dispatch_main()
     }

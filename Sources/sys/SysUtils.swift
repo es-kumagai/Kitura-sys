@@ -16,8 +16,17 @@
 
 import Dispatch
 
+// MARK: SysUtils
+
+
 public class SysUtils {
 
+    ///
+    /// Runs a block closure once
+    /// 
+    /// - Parameter lock: Pointer to the mutex lock
+    /// - Parameter block: closure () -> Void 
+    ///
     public static func doOnce(lock: UnsafeMutablePointer<Int>, block: () -> Void) {
         dispatch_once(lock, block)
     }

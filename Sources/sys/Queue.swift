@@ -16,36 +16,83 @@
 
 import Dispatch
 
+// MARK: Queue
+
 public class Queue {
+    
+    /// 
+    /// Lock to ensure
+    ///
     private static var onMainOnceLock : Int = 0
     
+    ///
+    /// Handle to the libDispatch queue
+    ///
     private let osQueue: dispatch_queue_t
     
+    
+    ///
+    /// Initializes a Queue instance
+    ///
+    /// - Parameter type:  QueueType (SERIAL or PARALLEL)
+    /// - Parameter label: Optional String describing the Queue
+    ///
+    /// - Returns: Queue instance 
+    ///
     public init(type: QueueType, label: String?=nil) {
     
     #if os(Linux)
+        
+        /// **Note:** When using Linux, use the shim for initializing a concurrent Queue.
+        ///
         let concurrent: COpaquePointer = get_dispatch_queue_concurrent()
+        
     #else
+        
         let concurrent = DISPATCH_QUEUE_CONCURRENT
+        
     #endif
 
     #if os(Linux)
+        
         let serial: COpaquePointer = nil
+        
     #else
+        
         let serial = DISPATCH_QUEUE_SERIAL
+        
     #endif
 
-        osQueue = dispatch_queue_create(label != nil ? label! : "", type == QueueType.PARALLEL ? concurrent : serial)
+        osQueue = dispatch_queue_create(label != nil ? label! : "",
+            type == QueueType.PARALLEL ? concurrent : serial)
     }
     
+    
+    ///
+    /// Run a block asynchronously
+    /// 
+    /// - Parameter block: a closure () -> Void  
+    ///
     public func queueAsync(block: () -> Void) {
         dispatch_async(osQueue, block)
     }
 
+    ///
+    /// Run a block synchronously
+    ///
+    /// - Parameter block: a closure () -> Void
+    ///
     public func queueSync(block: () -> Void) {
         dispatch_sync(osQueue, block)
     }
     
+    
+    /// 
+    /// Run a block once a main lock has been obtained
+    ///
+    /// - Parameter queue: Queue
+    /// - Parameter block: a closure () -> Void 
+    ///
     public static func queueIfFirstOnMain(queue: Queue, block: () -> Void) {
         var onQueue = true
         
@@ -60,6 +107,11 @@ public class Queue {
     }
 }
 
+///
+/// QueueType values
+///
 public enum QueueType {
+    
     case SERIAL, PARALLEL
+    
 }
